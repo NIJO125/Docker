@@ -1,0 +1,77 @@
+Docker is not supported on 32-bit architecture. To check the architecture on your
+system, run the following command:
+$ uname -i
+x86_64
+Docker is supported on kernel 3.8 or later. It has been back ported on some of
+the kernel 2.6, such as RHEL 6.5 and above. To check the kernel version, run the
+following command:
+$ uname -r
+3.18.7-200.fc21.x86_6
+Running kernel should support an appropriate storage backend. Some of these are
+VFS, DeviceMapper, AUFS, Btrfs, and OverlayFS.
+Mostly, the default storage backend or driver is devicemapper, which uses the
+device-mapper thin provisioning module to implement layers. It should be installed by
+default on the majority of Linux platforms. To check for device-mapper, you can run
+the following command:
+$ grep device-mapper /proc/devices
+253 device-mapper
+Support for cgroups and namespaces are in kernel for sometime and should be
+enabled by default. To check for their presence, you can look at the corresponding
+configuration file of the kernel you are running. For example, on Fedora, I can do
+something like the following:
+$ grep -i namespaces /boot/config-3.18.7-200.fc21.x86_64
+CONFIG_NAMESPACES=y
+$ grep -i cgroups /boot/config-3.18.7-200.fc21.x86_64
+CONFIG_CGROUPS=y
+
+
+To start the service:
+$ systemctl start docker
+f To verify the installation:
+$ docker info
+f To update the package:
+$ yum -y update docker
+f To enable the service start at boot time:
+$ systemctl enable docker
+f To stop the service:
+$ systemctl stop docker
+
+To pull an image, run the following command:
+$ docker pull fedora
+
+List the existing images by using the following command:
+$ docker images
+
+Create the Docker group if it is not there already:
+$ sudo group add docker
+2. Create the user to whom you want to give permission to administer Docker:
+$ useradd dockertest
+
+Run the following command to allow the newly created user to administer Docker:
+$ sudo gpasswd -a dockertest docker
+
+To search an image on a Docker registry, run the following command:
+docker search TERM
+
+To list the images that got more than 20 stars and are automated, run the following
+command:
+$ docker search -s 20 --automated fedora
+
+Image tags group images of the same type. For example, CentOS can have images
+with tags such as centos5, centos6, and so on. For example, to pull an image with
+the specific tag, run the following command:
+$ docker pull centos:centos7
+f By default, the image with latest tag gets pulled. To pull all images corresponding to
+all tags, use the following command:
+$ docker pull --all-tags centos
+f With Docker 1.6 (https://blog.docker.com/2015/04/dockerrelease-1-6/), we can build and refer to images by a new content-addressable
+identifier called a digest. It is a very useful feature when we want to work with
+a specific image, rather than tags. To pull an image with a specific digest, we can
+consider the following syntax:
+$ docker pull <image>@sha256:<digest>
+Here is an example of a command:
+$ docker pull debian@sha256:cbbf2f9a99b47fc460d422812b6a5adff7dfee
+951d8fa2e4a98caa0382cfbdbf
+
+
+page 333
